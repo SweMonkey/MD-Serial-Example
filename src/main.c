@@ -16,7 +16,7 @@ int main()
 
     while (1)
     {        
-        num = COM_recv(echoback, 64, MSG_DONTWAIT); // Was anything was sent to us? If so, try to read it into back into the buffer "echoback" with a limit of max 64 characters
+        num = COM_recv(echoback, 64, MSG_DONTWAIT); // Was anything was sent to us? If so, try to read it back into the buffer "echoback" with a limit of max 64 characters
 
         COM_send(echoback, num, MSG_WAITALL);       // If anything was sent to us, then send it straight back
 

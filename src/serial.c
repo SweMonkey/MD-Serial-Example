@@ -79,13 +79,13 @@ void COM_enable(u16 port, Baudrate baudrate)
     *((vu8*)com_ctrl) = baudrate | 0x38;    // Set baudrate, TR and TL to serial mode and enable triggering EXT interrupt
     
     SYS_setExtIntCallback(COM_RxINT);       // Set external interrupt callback
-    VDP_setReg(0xB, VDP_getReg(0xB) | 0x8); // Enable VDP EXT interrupt
-    SYS_setInterruptMaskLevel(1);           // Enable all interrupts on the 68k                  - hmm ?
+    VDP_setReg(11, VDP_getReg(11) | 0x8);   // Enable VDP EXT interrupt
+    SYS_setInterruptMaskLevel(1);           // Enable all interrupts on the 68k
 }
 
 void COM_disable()
 {
-    VDP_setReg(11, VDP_getReg(11) & ~0x08); // Disable VDP EXT interrupt
+    VDP_setReg(11, VDP_getReg(11) & ~0x8);  // Disable VDP EXT interrupt
     SYS_setInterruptMaskLevel(3);           // Disable EXT interrupt on the 68k
     SYS_setExtIntCallback(NULL);
     
@@ -103,10 +103,11 @@ void COM_RxINT()
     Z80_STATE_DECL
     Z80_STATE_SAVE
 
-    if ((*(vu8*)com_ctrl & 6) != 2) return;   // Check Ready/RxError flag in serial control register, Bail if no byte is ready or if there was an Rx error
+    if ((*(vu8*)com_ctrl & 6) != 2) goto Error;   // Check Ready/RxError flag in serial control register, Bail if no byte is ready or if there was an Rx error
     
     COM_push(*(vu8*)com_rx);
-    
+
+    Error:
     Z80_STATE_RESTORE
 }
 
@@ -132,8 +133,7 @@ u16 COM_send(void *buf, u16 len, u8 flags)
         rb++;
     }
 
-    QuitEarly:
-    
+    QuitEarly:    
     Z80_STATE_RESTORE
 
     return rb;
