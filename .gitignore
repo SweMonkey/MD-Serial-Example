@@ -1,0 +1,7 @@
+out/
+tmp/
+
+.directory
+.vscode
+build.sh
+*.code-workspace
